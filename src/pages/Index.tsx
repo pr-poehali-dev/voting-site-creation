@@ -4,6 +4,14 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import Icon from '@/components/ui/icon'
+import { LoginDialog } from '@/components/auth/LoginDialog'
+import { UserMenu } from '@/components/auth/UserMenu'
+
+interface User {
+  name: string
+  email: string
+  role: string
+}
 
 interface Poll {
   id: string
@@ -64,8 +72,24 @@ const mockPolls: Poll[] = [
 const Index = () => {
   const [polls, setPolls] = useState<Poll[]>(mockPolls)
   const [votedPolls, setVotedPolls] = useState<Set<string>>(new Set())
+  const [user, setUser] = useState<User | null>(null)
+  const [showLoginDialog, setShowLoginDialog] = useState(false)
+
+  const handleLogin = (userData: User) => {
+    setUser(userData)
+  }
+
+  const handleLogout = () => {
+    setUser(null)
+    setVotedPolls(new Set())
+  }
 
   const handleVote = (pollId: string, optionId: string) => {
+    if (!user) {
+      setShowLoginDialog(true)
+      return
+    }
+    
     if (votedPolls.has(pollId)) return
 
     setPolls(prevPolls =>
@@ -107,16 +131,51 @@ const Index = () => {
                 <p className="text-sm text-gray-600">Анонимные голосования</p>
               </div>
             </div>
-            <Button className="bg-primary hover:bg-primary/90">
-              <Icon name="Plus" size={16} className="mr-2" />
-              Создать голосование
-            </Button>
+            <div className="flex items-center space-x-3">
+              {user ? (
+                <>
+                  <Button className="bg-primary hover:bg-primary/90">
+                    <Icon name="Plus" size={16} className="mr-2" />
+                    Создать голосование
+                  </Button>
+                  <UserMenu user={user} onLogout={handleLogout} />
+                </>
+              ) : (
+                <Button onClick={() => setShowLoginDialog(true)} variant="outline">
+                  <Icon name="LogIn" size={16} className="mr-2" />
+                  Войти
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Welcome Message for Logged in Users */}
+        {user && (
+          <Card className="mb-8 animate-fade-in bg-gradient-to-r from-primary/5 to-success/5 border-primary/20">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-900 mb-1">
+                    Добро пожаловать, {user.name}!
+                  </h2>
+                  <p className="text-gray-600">
+                    {user.role === 'admin' ? 'У вас есть полный доступ к управлению платформой' : 'Участвуйте в голосованиях и создавайте свои опросы'}
+                  </p>
+                </div>
+                <Badge variant="secondary" className={
+                  user.role === 'admin' ? 'bg-destructive text-white' : 'bg-success text-white'
+                }>
+                  {user.role === 'admin' ? 'Администратор' : 'Участник'}
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Stats Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card className="animate-fade-in hover-scale">
@@ -140,7 +199,7 @@ const Index = () => {
                   <Icon name="Users" size={24} className="text-success" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">475</p>
+                  <p className="text-2xl font-bold text-gray-900">{user ? '475' : '???'}</p>
                   <p className="text-sm text-gray-600">Участников</p>
                 </div>
               </div>
@@ -227,10 +286,10 @@ const Index = () => {
                               onClick={() => handleVote(poll.id, option.id)}
                               variant="outline"
                               className="w-full justify-start hover:bg-primary/5 hover:border-primary transition-all duration-200"
-                              disabled={!poll.isActive}
+                              disabled={!poll.isActive || !user}
                             >
                               <Icon name="ChevronRight" size={16} className="mr-2" />
-                              Выбрать этот вариант
+                              {!user ? 'Войдите для голосования' : 'Выбрать этот вариант'}
                             </Button>
                           )}
                         </div>
@@ -268,9 +327,13 @@ const Index = () => {
               Соберите мнения команды, проведите опрос клиентов или организуйте 
               голосование по важным вопросам.
             </p>
-            <Button className="bg-primary hover:bg-primary/90">
+            <Button 
+              className="bg-primary hover:bg-primary/90"
+              onClick={() => !user && setShowLoginDialog(true)}
+              disabled={!user}
+            >
               <Icon name="Vote" size={16} className="mr-2" />
-              Начать голосование
+              {!user ? 'Войдите для создания' : 'Начать голосование'}
             </Button>
           </CardContent>
         </Card>
@@ -292,6 +355,13 @@ const Index = () => {
           </div>
         </div>
       </footer>
+
+      {/* Login Dialog */}
+      <LoginDialog 
+        open={showLoginDialog} 
+        onOpenChange={setShowLoginDialog}
+        onLogin={handleLogin}
+      />
     </div>
   )
 }
