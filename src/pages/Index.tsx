@@ -127,7 +127,7 @@ const Index = () => {
                 <Icon name="Vote" size={24} className="text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">VoteSpace</h1>
+                <h1 className="text-2xl font-bold text-gray-900">Голосование.ру</h1>
                 <p className="text-sm text-gray-600">Анонимные голосования</p>
               </div>
             </div>
@@ -356,7 +356,7 @@ const Index = () => {
               </span>
             </div>
             <div className="text-sm text-gray-500">
-              © 2025 VoteSpace. Безопасные голосования.
+              © 2025 Голосование.ру. Безопасные голосования.
             </div>
           </div>
         </div>

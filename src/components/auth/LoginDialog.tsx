@@ -89,7 +89,7 @@ export function LoginDialog({ open, onOpenChange, onLogin }: LoginDialogProps) {
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
             <Icon name="UserCheck" size={24} className="text-primary" />
-            <span>Добро пожаловать в VoteSpace</span>
+            <span>Добро пожаловать в Голосование.ру</span>
           </DialogTitle>
           <DialogDescription>
             Войдите в свою учетную запись или создайте новую для участия в голосованиях
