@@ -20,11 +20,27 @@ export function LoginDialog({ open, onOpenChange, onLogin }: LoginDialogProps) {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
     
-    // Симуляция входа
-    const user = {
-      name: loginData.email === 'admin@votespace.ru' ? 'Администратор' : 'Пользователь',
-      email: loginData.email,
-      role: loginData.email === 'admin@votespace.ru' ? 'admin' : 'user'
+    // Проверка учетных данных
+    let user
+    
+    if (loginData.email === 'snovi6423@gmail.com' && loginData.password === '89223109976') {
+      user = {
+        name: 'Владелец',
+        email: loginData.email,
+        role: 'owner'
+      }
+    } else if (loginData.email === 'admin@votespace.ru') {
+      user = {
+        name: 'Администратор',
+        email: loginData.email,
+        role: 'admin'
+      }
+    } else {
+      user = {
+        name: 'Пользователь',
+        email: loginData.email,
+        role: 'user'
+      }
     }
     
     onLogin(user)
@@ -52,10 +68,16 @@ export function LoginDialog({ open, onOpenChange, onLogin }: LoginDialogProps) {
     setRegisterData({ name: '', email: '', password: '', confirmPassword: '' })
   }
 
-  const handleDemoLogin = (type: 'admin' | 'user') => {
-    const user = type === 'admin' 
-      ? { name: 'Администратор', email: 'admin@votespace.ru', role: 'admin' }
-      : { name: 'Участник', email: 'user@votespace.ru', role: 'user' }
+  const handleDemoLogin = (type: 'admin' | 'user' | 'owner') => {
+    let user
+    
+    if (type === 'owner') {
+      user = { name: 'Владелец', email: 'snovi6423@gmail.com', role: 'owner' }
+    } else if (type === 'admin') {
+      user = { name: 'Администратор', email: 'admin@votespace.ru', role: 'admin' }
+    } else {
+      user = { name: 'Участник', email: 'user@votespace.ru', role: 'user' }
+    }
     
     onLogin(user)
     onOpenChange(false)
@@ -129,7 +151,7 @@ export function LoginDialog({ open, onOpenChange, onLogin }: LoginDialogProps) {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   <Button variant="outline" onClick={() => handleDemoLogin('user')} className="text-xs">
                     <Icon name="User" size={14} className="mr-1" />
                     Участник
@@ -137,6 +159,10 @@ export function LoginDialog({ open, onOpenChange, onLogin }: LoginDialogProps) {
                   <Button variant="outline" onClick={() => handleDemoLogin('admin')} className="text-xs">
                     <Icon name="Shield" size={14} className="mr-1" />
                     Админ
+                  </Button>
+                  <Button variant="outline" onClick={() => handleDemoLogin('owner')} className="text-xs bg-gradient-to-r from-amber-500 to-orange-500 text-white border-amber-500 hover:from-amber-600 hover:to-orange-600">
+                    <Icon name="Crown" size={14} className="mr-1" />
+                    Владелец
                   </Button>
                 </div>
               </CardContent>

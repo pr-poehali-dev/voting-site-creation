@@ -163,13 +163,19 @@ const Index = () => {
                     Добро пожаловать, {user.name}!
                   </h2>
                   <p className="text-gray-600">
-                    {user.role === 'admin' ? 'У вас есть полный доступ к управлению платформой' : 'Участвуйте в голосованиях и создавайте свои опросы'}
+                    {user.role === 'owner' ? 'Добро пожаловать, владелец! У вас максимальные права доступа' 
+                     : user.role === 'admin' ? 'У вас есть полный доступ к управлению платформой' 
+                     : 'Участвуйте в голосованиях и создавайте свои опросы'}
                   </p>
                 </div>
                 <Badge variant="secondary" className={
-                  user.role === 'admin' ? 'bg-destructive text-white' : 'bg-success text-white'
+                  user.role === 'owner' ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white'
+                  : user.role === 'admin' ? 'bg-destructive text-white' 
+                  : 'bg-success text-white'
                 }>
-                  {user.role === 'admin' ? 'Администратор' : 'Участник'}
+                  {user.role === 'owner' ? 'Владелец' 
+                   : user.role === 'admin' ? 'Администратор' 
+                   : 'Участник'}
                 </Badge>
               </div>
             </CardContent>

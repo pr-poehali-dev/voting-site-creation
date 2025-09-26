@@ -37,6 +37,8 @@ export function UserMenu({ user, onLogout }: UserMenuProps) {
 
   const getRoleColor = (role: string) => {
     switch (role) {
+      case 'owner':
+        return 'bg-gradient-to-r from-amber-500 to-orange-500 text-white'
       case 'admin':
         return 'bg-destructive text-white'
       case 'moderator':
@@ -48,6 +50,8 @@ export function UserMenu({ user, onLogout }: UserMenuProps) {
 
   const getRoleText = (role: string) => {
     switch (role) {
+      case 'owner':
+        return 'Владелец'
       case 'admin':
         return 'Администратор'
       case 'moderator':
@@ -108,7 +112,7 @@ export function UserMenu({ user, onLogout }: UserMenuProps) {
           Статистика
         </DropdownMenuItem>
         
-        {user.role === 'admin' && (
+        {(user.role === 'admin' || user.role === 'owner') && (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="cursor-pointer">
@@ -120,6 +124,13 @@ export function UserMenu({ user, onLogout }: UserMenuProps) {
               <Icon name="Users" size={16} className="mr-2" />
               Пользователи
             </DropdownMenuItem>
+            
+            {user.role === 'owner' && (
+              <DropdownMenuItem className="cursor-pointer">
+                <Icon name="Crown" size={16} className="mr-2" />
+                Владелец-панель
+              </DropdownMenuItem>
+            )}
           </>
         )}
         
