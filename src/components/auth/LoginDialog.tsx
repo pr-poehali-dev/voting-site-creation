@@ -72,11 +72,11 @@ export function LoginDialog({ open, onOpenChange, onLogin }: LoginDialogProps) {
     let user
     
     if (type === 'owner') {
-      user = { name: 'Владелец', email: 'snovi6423@gmail.com', role: 'owner' }
+      user = { name: 'Демо Владелец', email: 'demo-owner@golосование.ru', role: 'demo-owner' }
     } else if (type === 'admin') {
-      user = { name: 'Администратор', email: 'admin@votespace.ru', role: 'admin' }
+      user = { name: 'Демо Админ', email: 'demo-admin@golосование.ru', role: 'demo-admin' }
     } else {
-      user = { name: 'Участник', email: 'user@votespace.ru', role: 'user' }
+      user = { name: 'Демо Участник', email: 'demo-user@golосование.ru', role: 'demo-user' }
     }
     
     onLogin(user)
@@ -162,7 +162,7 @@ export function LoginDialog({ open, onOpenChange, onLogin }: LoginDialogProps) {
                   </Button>
                   <Button variant="outline" onClick={() => handleDemoLogin('owner')} className="text-xs bg-gradient-to-r from-amber-500 to-orange-500 text-white border-amber-500 hover:from-amber-600 hover:to-orange-600">
                     <Icon name="Crown" size={14} className="mr-1" />
-                    Владелец
+                    Демо Владелец
                   </Button>
                 </div>
               </CardContent>

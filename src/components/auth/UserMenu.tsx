@@ -10,6 +10,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
+import { DemoBadge } from '@/components/ui/demo-badge'
 import Icon from '@/components/ui/icon'
 
 interface User {
@@ -39,10 +40,16 @@ export function UserMenu({ user, onLogout }: UserMenuProps) {
     switch (role) {
       case 'owner':
         return 'bg-gradient-to-r from-amber-500 to-orange-500 text-white'
+      case 'demo-owner':
+        return 'bg-gradient-to-r from-amber-400 to-orange-400 text-white border border-amber-300'
       case 'admin':
         return 'bg-destructive text-white'
+      case 'demo-admin':
+        return 'bg-red-400 text-white border border-red-300'
       case 'moderator':
         return 'bg-orange-500 text-white'
+      case 'demo-user':
+        return 'bg-green-400 text-white border border-green-300'
       default:
         return 'bg-success text-white'
     }
@@ -52,10 +59,16 @@ export function UserMenu({ user, onLogout }: UserMenuProps) {
     switch (role) {
       case 'owner':
         return 'Владелец'
+      case 'demo-owner':
+        return 'Демо Владелец'
       case 'admin':
         return 'Администратор'
+      case 'demo-admin':
+        return 'Демо Админ'
       case 'moderator':
         return 'Модератор'
+      case 'demo-user':
+        return 'Демо Участник'
       default:
         return 'Участник'
     }
@@ -89,9 +102,12 @@ export function UserMenu({ user, onLogout }: UserMenuProps) {
                 </p>
               </div>
             </div>
-            <Badge variant="secondary" className={`w-fit ${getRoleColor(user.role)}`}>
-              {getRoleText(user.role)}
-            </Badge>
+            <div className="flex items-center gap-2">
+              <Badge variant="secondary" className={`w-fit ${getRoleColor(user.role)}`}>
+                {getRoleText(user.role)}
+              </Badge>
+              {user.role.startsWith('demo-') && <DemoBadge />}
+            </div>
           </div>
         </DropdownMenuLabel>
         
@@ -112,24 +128,33 @@ export function UserMenu({ user, onLogout }: UserMenuProps) {
           Статистика
         </DropdownMenuItem>
         
-        {(user.role === 'admin' || user.role === 'owner') && (
+        {(user.role === 'admin' || user.role === 'owner' || user.role === 'demo-admin' || user.role === 'demo-owner') && (
           <>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer">
-              <Icon name="Settings" size={16} className="mr-2" />
-              Управление
-            </DropdownMenuItem>
-            
-            <DropdownMenuItem className="cursor-pointer">
-              <Icon name="Users" size={16} className="mr-2" />
-              Пользователи
-            </DropdownMenuItem>
-            
-            {user.role === 'owner' && (
-              <DropdownMenuItem className="cursor-pointer">
-                <Icon name="Crown" size={16} className="mr-2" />
-                Владелец-панель
+            {user.role.startsWith('demo-') ? (
+              <DropdownMenuItem className="cursor-pointer opacity-50" disabled>
+                <Icon name="Lock" size={16} className="mr-2" />
+                Демо режим - ограничено
               </DropdownMenuItem>
+            ) : (
+              <>
+                <DropdownMenuItem className="cursor-pointer">
+                  <Icon name="Settings" size={16} className="mr-2" />
+                  Управление
+                </DropdownMenuItem>
+                
+                <DropdownMenuItem className="cursor-pointer">
+                  <Icon name="Users" size={16} className="mr-2" />
+                  Пользователи
+                </DropdownMenuItem>
+                
+                {user.role === 'owner' && (
+                  <DropdownMenuItem className="cursor-pointer">
+                    <Icon name="Crown" size={16} className="mr-2" />
+                    Владелец-панель
+                  </DropdownMenuItem>
+                )}
+              </>
             )}
           </>
         )}

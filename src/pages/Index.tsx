@@ -134,9 +134,12 @@ const Index = () => {
             <div className="flex items-center space-x-3">
               {user ? (
                 <>
-                  <Button className="bg-primary hover:bg-primary/90">
+                  <Button 
+                    className="bg-primary hover:bg-primary/90"
+                    disabled={user.role.startsWith('demo-')}
+                  >
                     <Icon name="Plus" size={16} className="mr-2" />
-                    Создать голосование
+                    {user.role.startsWith('demo-') ? 'Демо - ограничено' : 'Создать голосование'}
                   </Button>
                   <UserMenu user={user} onLogout={handleLogout} />
                 </>
@@ -163,18 +166,27 @@ const Index = () => {
                     Добро пожаловать, {user.name}!
                   </h2>
                   <p className="text-gray-600">
-                    {user.role === 'owner' ? 'Добро пожаловать, владелец! У вас максимальные права доступа' 
-                     : user.role === 'admin' ? 'У вас есть полный доступ к управлению платформой' 
+                    {user.role === 'owner' ? 'Добро пожаловать, владелец! У вас максимальные права доступа'
+                     : user.role === 'demo-owner' ? 'Демо режим владельца - ограниченные функции для тестирования'
+                     : user.role === 'admin' ? 'У вас есть полный доступ к управлению платформой'
+                     : user.role === 'demo-admin' ? 'Демо режим администратора - ограниченные функции'
+                     : user.role === 'demo-user' ? 'Демо режим участника - тестируйте базовые функции'
                      : 'Участвуйте в голосованиях и создавайте свои опросы'}
                   </p>
                 </div>
                 <Badge variant="secondary" className={
                   user.role === 'owner' ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white'
-                  : user.role === 'admin' ? 'bg-destructive text-white' 
+                  : user.role === 'demo-owner' ? 'bg-gradient-to-r from-amber-400 to-orange-400 text-white border border-amber-300'
+                  : user.role === 'admin' ? 'bg-destructive text-white'
+                  : user.role === 'demo-admin' ? 'bg-red-400 text-white border border-red-300'
+                  : user.role === 'demo-user' ? 'bg-green-400 text-white border border-green-300'
                   : 'bg-success text-white'
                 }>
-                  {user.role === 'owner' ? 'Владелец' 
-                   : user.role === 'admin' ? 'Администратор' 
+                  {user.role === 'owner' ? 'Владелец'
+                   : user.role === 'demo-owner' ? 'Демо Владелец'
+                   : user.role === 'admin' ? 'Администратор'
+                   : user.role === 'demo-admin' ? 'Демо Админ'
+                   : user.role === 'demo-user' ? 'Демо Участник'
                    : 'Участник'}
                 </Badge>
               </div>
@@ -336,10 +348,12 @@ const Index = () => {
             <Button 
               className="bg-primary hover:bg-primary/90"
               onClick={() => !user && setShowLoginDialog(true)}
-              disabled={!user}
+              disabled={!user || (user && user.role.startsWith('demo-'))}
             >
               <Icon name="Vote" size={16} className="mr-2" />
-              {!user ? 'Войдите для создания' : 'Начать голосование'}
+              {!user ? 'Войдите для создания' 
+               : user.role.startsWith('demo-') ? 'Демо - ограничено'
+               : 'Начать голосование'}
             </Button>
           </CardContent>
         </Card>
