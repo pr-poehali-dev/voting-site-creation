@@ -209,7 +209,7 @@ const Index = () => {
                   <Icon name="BarChart3" size={24} className="text-primary" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">3</p>
+                  <p className="text-2xl font-bold text-gray-900">0</p>
                   <p className="text-sm text-gray-600">Активных голосований</p>
                 </div>
               </div>
