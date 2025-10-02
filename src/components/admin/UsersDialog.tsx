@@ -1,17 +1,36 @@
+import { useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import Icon from '@/components/ui/icon'
+
+interface User {
+  name: string
+  email: string
+  role: string
+}
 
 interface UsersDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  currentUser: User
 }
 
-export function UsersDialog({ open, onOpenChange }: UsersDialogProps) {
-  const users = [
+export function UsersDialog({ open, onOpenChange, currentUser }: UsersDialogProps) {
+  const [userToDelete, setUserToDelete] = useState<string | null>(null)
+  const [users, setUsers] = useState([
     {
       id: '1',
       name: 'Александр Иванов',
@@ -42,9 +61,19 @@ export function UsersDialog({ open, onOpenChange }: UsersDialogProps) {
       polls: 0,
       votes: 12
     }
-  ]
+  ])
+
+  const handleDeleteUser = (userId: string) => {
+    setUsers(users.filter(u => u.id !== userId))
+    setUserToDelete(null)
+  }
+
+  const getUserToDeleteInfo = () => {
+    return users.find(u => u.id === userToDelete)
+  }
 
   return (
+    <>
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
@@ -104,17 +133,25 @@ export function UsersDialog({ open, onOpenChange }: UsersDialogProps) {
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      {user.role !== 'owner' && (
+                      {user.role !== 'owner' && currentUser.role === 'owner' && (
                         <>
                           <Button variant="outline" size="sm">
                             <Icon name="Settings" size={14} className="mr-1" />
                             Роль
                           </Button>
-                          <Button variant="outline" size="sm" className="text-destructive hover:text-destructive">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                            onClick={() => setUserToDelete(user.id)}
+                          >
                             <Icon name="Trash2" size={14} className="mr-1" />
                             Удалить
                           </Button>
                         </>
+                      )}
+                      {user.role !== 'owner' && currentUser.role !== 'owner' && (
+                        <Badge variant="secondary">Только для владельца</Badge>
                       )}
                     </div>
                   </div>
@@ -145,5 +182,27 @@ export function UsersDialog({ open, onOpenChange }: UsersDialogProps) {
         </div>
       </DialogContent>
     </Dialog>
+
+    <AlertDialog open={!!userToDelete} onOpenChange={() => setUserToDelete(null)}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Удалить пользователя?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Вы уверены, что хотите удалить пользователя <strong>{getUserToDeleteInfo()?.name}</strong>?
+            Это действие нельзя отменить. Все голосования и данные пользователя будут сохранены.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Отмена</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={() => userToDelete && handleDeleteUser(userToDelete)}
+            className="bg-destructive hover:bg-destructive/90"
+          >
+            Удалить пользователя
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   )
 }

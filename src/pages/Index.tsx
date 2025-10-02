@@ -436,6 +436,7 @@ const Index = () => {
           <UsersDialog
             open={showUsers}
             onOpenChange={setShowUsers}
+            currentUser={user}
           />
         </>
       )}
