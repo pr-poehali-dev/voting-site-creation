@@ -34,47 +34,7 @@ interface Poll {
   endDate: string
 }
 
-const mockPolls: Poll[] = [
-  {
-    id: '1',
-    title: 'Выберите дизайн нового логотипа',
-    description: 'Помогите нам выбрать лучший вариант логотипа для компании',
-    options: [
-      { id: '1a', text: 'Минималистичный дизайн', votes: 45 },
-      { id: '1b', text: 'Яркий и креативный', votes: 32 },
-      { id: '1c', text: 'Классический стиль', votes: 28 }
-    ],
-    totalVotes: 105,
-    isActive: true,
-    endDate: '2025-10-15'
-  },
-  {
-    id: '2',
-    title: 'Время проведения командных встреч',
-    description: 'Когда вам удобнее участвовать в еженедельных встречах?',
-    options: [
-      { id: '2a', text: 'Понедельник 10:00', votes: 15 },
-      { id: '2b', text: 'Среда 14:00', votes: 42 },
-      { id: '2c', text: 'Пятница 16:00', votes: 23 }
-    ],
-    totalVotes: 80,
-    isActive: true,
-    endDate: '2025-09-30'
-  },
-  {
-    id: '3',
-    title: 'Предпочтения по корпоративным мероприятиям',
-    description: 'Какие виды корпоративных мероприятий вам наиболее интересны?',
-    options: [
-      { id: '3a', text: 'Спортивные соревнования', votes: 67 },
-      { id: '3b', text: 'Творческие мастер-классы', votes: 89 },
-      { id: '3c', text: 'Выездные тимбилдинги', votes: 134 }
-    ],
-    totalVotes: 290,
-    isActive: false,
-    endDate: '2025-09-20'
-  }
-]
+const mockPolls: Poll[] = []
 
 const Index = () => {
   const [polls, setPolls] = useState<Poll[]>(mockPolls)
