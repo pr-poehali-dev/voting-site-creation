@@ -131,13 +131,16 @@ const Index = () => {
             <div className="flex items-center space-x-3">
               {user ? (
                 <>
-                  <Button 
-                    className="bg-primary hover:bg-primary/90"
-                    disabled={user.role.startsWith('demo-')}
-                  >
-                    <Icon name="Plus" size={16} className="mr-2" />
-                    {user.role.startsWith('demo-') ? 'Демо - ограничено' : 'Создать голосование'}
-                  </Button>
+                  {(user.role === 'owner' || user.role === 'admin' || user.role === 'demo-owner' || user.role === 'demo-admin') && (
+                    <Button 
+                      className="bg-primary hover:bg-primary/90"
+                      onClick={() => setShowCreatePollDialog(true)}
+                      disabled={user.role.startsWith('demo-')}
+                    >
+                      <Icon name="Plus" size={16} className="mr-2" />
+                      {user.role.startsWith('demo-') ? 'Демо - ограничено' : 'Создать голосование'}
+                    </Button>
+                  )}
                   <UserMenu 
                     user={user} 
                     onLogout={handleLogout}
@@ -177,7 +180,7 @@ const Index = () => {
                      : user.role === 'admin' ? 'У вас есть полный доступ к управлению платформой'
                      : user.role === 'demo-admin' ? 'Демо режим администратора - ограниченные функции'
                      : user.role === 'demo-user' ? 'Демо режим участника - тестируйте базовые функции'
-                     : 'Участвуйте в голосованиях и создавайте свои опросы'}
+                     : 'Участвуйте в голосованиях (создание доступно только админам)'}
                   </p>
                 </div>
                 <Badge variant="secondary" className={
@@ -356,13 +359,17 @@ const Index = () => {
               onClick={() => {
                 if (!user) {
                   setShowLoginDialog(true)
-                } else {
+                } else if (user.role === 'owner' || user.role === 'admin' || user.role === 'demo-owner' || user.role === 'demo-admin') {
                   setShowCreatePollDialog(true)
                 }
               }}
+              disabled={user && user.role !== 'owner' && user.role !== 'admin' && user.role !== 'demo-owner' && user.role !== 'demo-admin'}
             >
               <Icon name="Vote" size={16} className="mr-2" />
-              {!user ? 'Войдите для создания' : 'Начать голосование'}
+              {!user ? 'Войдите для создания' 
+               : (user.role === 'owner' || user.role === 'admin' || user.role === 'demo-owner' || user.role === 'demo-admin') 
+                 ? 'Начать голосование' 
+                 : 'Только для админов'}
             </Button>
           </CardContent>
         </Card>
