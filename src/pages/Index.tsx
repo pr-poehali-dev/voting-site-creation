@@ -348,12 +348,10 @@ const Index = () => {
             <Button 
               className="bg-primary hover:bg-primary/90"
               onClick={() => !user && setShowLoginDialog(true)}
-              disabled={!user || (user && user.role.startsWith('demo-'))}
+              disabled={!user}
             >
               <Icon name="Vote" size={16} className="mr-2" />
-              {!user ? 'Войдите для создания' 
-               : user.role.startsWith('demo-') ? 'Демо - ограничено'
-               : 'Начать голосование'}
+              {!user ? 'Войдите для создания' : 'Начать голосование'}
             </Button>
           </CardContent>
         </Card>
