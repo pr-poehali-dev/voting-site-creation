@@ -6,6 +6,7 @@ import { Progress } from '@/components/ui/progress'
 import Icon from '@/components/ui/icon'
 import { LoginDialog } from '@/components/auth/LoginDialog'
 import { UserMenu } from '@/components/auth/UserMenu'
+import { CreatePollDialog } from '@/components/polls/CreatePollDialog'
 
 interface User {
   name: string
@@ -74,6 +75,7 @@ const Index = () => {
   const [votedPolls, setVotedPolls] = useState<Set<string>>(new Set())
   const [user, setUser] = useState<User | null>(null)
   const [showLoginDialog, setShowLoginDialog] = useState(false)
+  const [showCreatePollDialog, setShowCreatePollDialog] = useState(false)
 
   const handleLogin = (userData: User) => {
     setUser(userData)
@@ -114,6 +116,29 @@ const Index = () => {
 
   const getVotePercentage = (votes: number, total: number) => {
     return total > 0 ? Math.round((votes / total) * 100) : 0
+  }
+
+  const handleCreatePoll = (pollData: {
+    title: string
+    description: string
+    options: string[]
+    endDate: string
+  }) => {
+    const newPoll: Poll = {
+      id: Date.now().toString(),
+      title: pollData.title,
+      description: pollData.description,
+      options: pollData.options.map((text, index) => ({
+        id: `${Date.now()}-${index}`,
+        text,
+        votes: 0
+      })),
+      totalVotes: 0,
+      isActive: true,
+      endDate: pollData.endDate
+    }
+
+    setPolls([newPoll, ...polls])
   }
 
   return (
@@ -347,8 +372,13 @@ const Index = () => {
             </p>
             <Button 
               className="bg-primary hover:bg-primary/90"
-              onClick={() => !user && setShowLoginDialog(true)}
-              disabled={!user}
+              onClick={() => {
+                if (!user) {
+                  setShowLoginDialog(true)
+                } else {
+                  setShowCreatePollDialog(true)
+                }
+              }}
             >
               <Icon name="Vote" size={16} className="mr-2" />
               {!user ? 'Войдите для создания' : 'Начать голосование'}
@@ -374,11 +404,17 @@ const Index = () => {
         </div>
       </footer>
 
-      {/* Login Dialog */}
+      {/* Dialogs */}
       <LoginDialog 
         open={showLoginDialog} 
         onOpenChange={setShowLoginDialog}
         onLogin={handleLogin}
+      />
+      
+      <CreatePollDialog
+        open={showCreatePollDialog}
+        onOpenChange={setShowCreatePollDialog}
+        onCreatePoll={handleCreatePoll}
       />
     </div>
   )
