@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -13,6 +13,8 @@ import { ProfileDialog } from '@/components/profile/ProfileDialog'
 import { MyPollsDialog } from '@/components/profile/MyPollsDialog'
 import { StatsDialog } from '@/components/profile/StatsDialog'
 import { UsersDialog } from '@/components/admin/UsersDialog'
+import { getPolls, createPoll, vote } from '@/lib/api'
+import type { Poll } from '@/lib/api'
 
 interface User {
   name: string
@@ -20,26 +22,11 @@ interface User {
   role: string
 }
 
-interface Poll {
-  id: string
-  title: string
-  description: string
-  options: {
-    id: string
-    text: string
-    votes: number
-  }[]
-  totalVotes: number
-  isActive: boolean
-  endDate: string
-}
-
-const mockPolls: Poll[] = []
-
 const Index = () => {
-  const [polls, setPolls] = useState<Poll[]>(mockPolls)
+  const [polls, setPolls] = useState<Poll[]>([])
   const [votedPolls, setVotedPolls] = useState<Set<string>>(new Set())
   const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
   const [showLoginDialog, setShowLoginDialog] = useState(false)
   const [showCreatePollDialog, setShowCreatePollDialog] = useState(false)
   const [showAdminPanel, setShowAdminPanel] = useState(false)
@@ -48,6 +35,23 @@ const Index = () => {
   const [showMyPolls, setShowMyPolls] = useState(false)
   const [showStats, setShowStats] = useState(false)
   const [showUsers, setShowUsers] = useState(false)
+
+  // Загрузка голосований при монтировании
+  useEffect(() => {
+    loadPolls()
+  }, [])
+
+  const loadPolls = async () => {
+    try {
+      setLoading(true)
+      const data = await getPolls()
+      setPolls(data)
+    } catch (error) {
+      console.error('Failed to load polls:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleLogin = (userData: User) => {
     setUser(userData)
@@ -58,7 +62,7 @@ const Index = () => {
     setVotedPolls(new Set())
   }
 
-  const handleVote = (pollId: string, optionId: string) => {
+  const handleVote = async (pollId: string, optionId: string) => {
     if (!user) {
       setShowLoginDialog(true)
       return
@@ -66,51 +70,52 @@ const Index = () => {
     
     if (votedPolls.has(pollId)) return
 
-    setPolls(prevPolls =>
-      prevPolls.map(poll => {
-        if (poll.id === pollId) {
-          return {
-            ...poll,
-            options: poll.options.map(option =>
-              option.id === optionId
-                ? { ...option, votes: option.votes + 1 }
-                : option
-            ),
-            totalVotes: poll.totalVotes + 1
+    try {
+      await vote({ pollId, optionId, userId: 1 })
+      
+      // Обновляем локальное состояние
+      setPolls(prevPolls =>
+        prevPolls.map(poll => {
+          if (poll.id === pollId) {
+            return {
+              ...poll,
+              options: poll.options.map(option =>
+                option.id === optionId
+                  ? { ...option, votes: option.votes + 1 }
+                  : option
+              ),
+              totalVotes: poll.totalVotes + 1
+            }
           }
-        }
-        return poll
-      })
-    )
+          return poll
+        })
+      )
 
-    setVotedPolls(prev => new Set(prev).add(pollId))
+      setVotedPolls(prev => new Set(prev).add(pollId))
+    } catch (error) {
+      console.error('Failed to vote:', error)
+      alert('Не удалось проголосовать. Возможно, вы уже голосовали.')
+    }
   }
 
   const getVotePercentage = (votes: number, total: number) => {
     return total > 0 ? Math.round((votes / total) * 100) : 0
   }
 
-  const handleCreatePoll = (pollData: {
+  const handleCreatePoll = async (pollData: {
     title: string
     description: string
     options: string[]
     endDate: string
   }) => {
-    const newPoll: Poll = {
-      id: Date.now().toString(),
-      title: pollData.title,
-      description: pollData.description,
-      options: pollData.options.map((text, index) => ({
-        id: `${Date.now()}-${index}`,
-        text,
-        votes: 0
-      })),
-      totalVotes: 0,
-      isActive: true,
-      endDate: pollData.endDate
+    try {
+      await createPoll({ ...pollData, userId: 1 })
+      // Перезагружаем список голосований
+      await loadPolls()
+    } catch (error) {
+      console.error('Failed to create poll:', error)
+      alert('Не удалось создать голосование')
     }
-
-    setPolls([newPoll, ...polls])
   }
 
   return (
@@ -249,8 +254,14 @@ const Index = () => {
         </div>
 
         {/* Polls Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {polls.map((poll, index) => {
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-4 text-gray-500">Загрузка голосований...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {polls.map((poll, index) => {
             const hasVoted = votedPolls.has(poll.id)
             
             return (
@@ -339,7 +350,8 @@ const Index = () => {
               </Card>
             )
           })}
-        </div>
+          </div>
+        )}
 
         {/* Empty State for More Polls */}
         <Card className="mt-8 animate-fade-in border-dashed border-2 border-gray-300">

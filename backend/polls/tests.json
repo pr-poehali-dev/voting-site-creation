@@ -1,0 +1,32 @@
+{
+  "tests": [
+    {
+      "name": "GET all polls",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "polls": "array"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "CREATE poll",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "action": "create",
+        "title": "Test Poll",
+        "description": "Test Description",
+        "options": ["Option 1", "Option 2"],
+        "endDate": "2025-12-31",
+        "userId": 1
+      },
+      "expectedStatus": 201,
+      "expectedBody": {
+        "success": true
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
