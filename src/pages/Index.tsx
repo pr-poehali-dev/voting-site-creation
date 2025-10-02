@@ -7,6 +7,8 @@ import Icon from '@/components/ui/icon'
 import { LoginDialog } from '@/components/auth/LoginDialog'
 import { UserMenu } from '@/components/auth/UserMenu'
 import { CreatePollDialog } from '@/components/polls/CreatePollDialog'
+import { AdminPanel } from '@/components/admin/AdminPanel'
+import { OwnerPanel } from '@/components/admin/OwnerPanel'
 
 interface User {
   name: string
@@ -76,6 +78,8 @@ const Index = () => {
   const [user, setUser] = useState<User | null>(null)
   const [showLoginDialog, setShowLoginDialog] = useState(false)
   const [showCreatePollDialog, setShowCreatePollDialog] = useState(false)
+  const [showAdminPanel, setShowAdminPanel] = useState(false)
+  const [showOwnerPanel, setShowOwnerPanel] = useState(false)
 
   const handleLogin = (userData: User) => {
     setUser(userData)
@@ -166,7 +170,12 @@ const Index = () => {
                     <Icon name="Plus" size={16} className="mr-2" />
                     {user.role.startsWith('demo-') ? 'Демо - ограничено' : 'Создать голосование'}
                   </Button>
-                  <UserMenu user={user} onLogout={handleLogout} />
+                  <UserMenu 
+                    user={user} 
+                    onLogout={handleLogout}
+                    onOpenAdminPanel={() => setShowAdminPanel(true)}
+                    onOpenOwnerPanel={() => setShowOwnerPanel(true)}
+                  />
                 </>
               ) : (
                 <Button onClick={() => setShowLoginDialog(true)} variant="outline">
@@ -415,6 +424,16 @@ const Index = () => {
         open={showCreatePollDialog}
         onOpenChange={setShowCreatePollDialog}
         onCreatePoll={handleCreatePoll}
+      />
+
+      <AdminPanel
+        open={showAdminPanel}
+        onOpenChange={setShowAdminPanel}
+      />
+
+      <OwnerPanel
+        open={showOwnerPanel}
+        onOpenChange={setShowOwnerPanel}
       />
     </div>
   )

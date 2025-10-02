@@ -22,9 +22,11 @@ interface User {
 interface UserMenuProps {
   user: User
   onLogout: () => void
+  onOpenAdminPanel?: () => void
+  onOpenOwnerPanel?: () => void
 }
 
-export function UserMenu({ user, onLogout }: UserMenuProps) {
+export function UserMenu({ user, onLogout, onOpenAdminPanel, onOpenOwnerPanel }: UserMenuProps) {
   const [isOpen, setIsOpen] = useState(false)
 
   const getInitials = (name: string) => {
@@ -138,7 +140,13 @@ export function UserMenu({ user, onLogout }: UserMenuProps) {
               </DropdownMenuItem>
             ) : (
               <>
-                <DropdownMenuItem className="cursor-pointer">
+                <DropdownMenuItem 
+                  className="cursor-pointer"
+                  onClick={() => {
+                    onOpenAdminPanel?.()
+                    setIsOpen(false)
+                  }}
+                >
                   <Icon name="Settings" size={16} className="mr-2" />
                   Управление
                 </DropdownMenuItem>
@@ -149,7 +157,13 @@ export function UserMenu({ user, onLogout }: UserMenuProps) {
                 </DropdownMenuItem>
                 
                 {user.role === 'owner' && (
-                  <DropdownMenuItem className="cursor-pointer">
+                  <DropdownMenuItem 
+                    className="cursor-pointer"
+                    onClick={() => {
+                      onOpenOwnerPanel?.()
+                      setIsOpen(false)
+                    }}
+                  >
                     <Icon name="Crown" size={16} className="mr-2" />
                     Владелец-панель
                   </DropdownMenuItem>
