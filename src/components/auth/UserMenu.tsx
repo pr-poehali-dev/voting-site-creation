@@ -24,9 +24,13 @@ interface UserMenuProps {
   onLogout: () => void
   onOpenAdminPanel?: () => void
   onOpenOwnerPanel?: () => void
+  onOpenProfile?: () => void
+  onOpenMyPolls?: () => void
+  onOpenStats?: () => void
+  onOpenUsers?: () => void
 }
 
-export function UserMenu({ user, onLogout, onOpenAdminPanel, onOpenOwnerPanel }: UserMenuProps) {
+export function UserMenu({ user, onLogout, onOpenAdminPanel, onOpenOwnerPanel, onOpenProfile, onOpenMyPolls, onOpenStats, onOpenUsers }: UserMenuProps) {
   const [isOpen, setIsOpen] = useState(false)
 
   const getInitials = (name: string) => {
@@ -115,17 +119,35 @@ export function UserMenu({ user, onLogout, onOpenAdminPanel, onOpenOwnerPanel }:
         
         <DropdownMenuSeparator />
         
-        <DropdownMenuItem className="cursor-pointer">
+        <DropdownMenuItem 
+          className="cursor-pointer"
+          onClick={() => {
+            onOpenProfile?.()
+            setIsOpen(false)
+          }}
+        >
           <Icon name="User" size={16} className="mr-2" />
           Мой профиль
         </DropdownMenuItem>
         
-        <DropdownMenuItem className="cursor-pointer">
+        <DropdownMenuItem 
+          className="cursor-pointer"
+          onClick={() => {
+            onOpenMyPolls?.()
+            setIsOpen(false)
+          }}
+        >
           <Icon name="Vote" size={16} className="mr-2" />
           Мои голосования
         </DropdownMenuItem>
         
-        <DropdownMenuItem className="cursor-pointer">
+        <DropdownMenuItem 
+          className="cursor-pointer"
+          onClick={() => {
+            onOpenStats?.()
+            setIsOpen(false)
+          }}
+        >
           <Icon name="BarChart3" size={16} className="mr-2" />
           Статистика
         </DropdownMenuItem>
@@ -151,7 +173,13 @@ export function UserMenu({ user, onLogout, onOpenAdminPanel, onOpenOwnerPanel }:
                   Управление
                 </DropdownMenuItem>
                 
-                <DropdownMenuItem className="cursor-pointer">
+                <DropdownMenuItem 
+                  className="cursor-pointer"
+                  onClick={() => {
+                    onOpenUsers?.()
+                    setIsOpen(false)
+                  }}
+                >
                   <Icon name="Users" size={16} className="mr-2" />
                   Пользователи
                 </DropdownMenuItem>

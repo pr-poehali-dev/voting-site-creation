@@ -9,6 +9,10 @@ import { UserMenu } from '@/components/auth/UserMenu'
 import { CreatePollDialog } from '@/components/polls/CreatePollDialog'
 import { AdminPanel } from '@/components/admin/AdminPanel'
 import { OwnerPanel } from '@/components/admin/OwnerPanel'
+import { ProfileDialog } from '@/components/profile/ProfileDialog'
+import { MyPollsDialog } from '@/components/profile/MyPollsDialog'
+import { StatsDialog } from '@/components/profile/StatsDialog'
+import { UsersDialog } from '@/components/admin/UsersDialog'
 
 interface User {
   name: string
@@ -80,6 +84,10 @@ const Index = () => {
   const [showCreatePollDialog, setShowCreatePollDialog] = useState(false)
   const [showAdminPanel, setShowAdminPanel] = useState(false)
   const [showOwnerPanel, setShowOwnerPanel] = useState(false)
+  const [showProfile, setShowProfile] = useState(false)
+  const [showMyPolls, setShowMyPolls] = useState(false)
+  const [showStats, setShowStats] = useState(false)
+  const [showUsers, setShowUsers] = useState(false)
 
   const handleLogin = (userData: User) => {
     setUser(userData)
@@ -175,6 +183,10 @@ const Index = () => {
                     onLogout={handleLogout}
                     onOpenAdminPanel={() => setShowAdminPanel(true)}
                     onOpenOwnerPanel={() => setShowOwnerPanel(true)}
+                    onOpenProfile={() => setShowProfile(true)}
+                    onOpenMyPolls={() => setShowMyPolls(true)}
+                    onOpenStats={() => setShowStats(true)}
+                    onOpenUsers={() => setShowUsers(true)}
                   />
                 </>
               ) : (
@@ -435,6 +447,31 @@ const Index = () => {
         open={showOwnerPanel}
         onOpenChange={setShowOwnerPanel}
       />
+
+      {user && (
+        <>
+          <ProfileDialog
+            open={showProfile}
+            onOpenChange={setShowProfile}
+            user={user}
+          />
+
+          <MyPollsDialog
+            open={showMyPolls}
+            onOpenChange={setShowMyPolls}
+          />
+
+          <StatsDialog
+            open={showStats}
+            onOpenChange={setShowStats}
+          />
+
+          <UsersDialog
+            open={showUsers}
+            onOpenChange={setShowUsers}
+          />
+        </>
+      )}
     </div>
   )
 }
